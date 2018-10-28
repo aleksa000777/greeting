@@ -18,18 +18,18 @@ class App extends Component {
     fetch('/api')
       .then(res => res.json())
       .then(data => this.setState({ result: data.data }))
-      .catch(err => console.error())
+      .catch(err => console.error(err))
   }
   
   render() {
-    const { result, name } = this.state
+    const { name, result } = this.state
     
     return (
       <div>
         <form onSubmit={this.onSubmitForm}>
-          <label>
+          <label htmlFor="name">
             Name:
-            <input type="text" name="name" />
+            <input type="text" name="name" id="name" value={name} />
           </label>
           <input type="submit" value="Submit" />
         </form>
