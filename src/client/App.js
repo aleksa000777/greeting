@@ -2,12 +2,40 @@ import React, { Component } from 'react';
 import './app.css';
 
 class App extends Component {
+  state = {
+    name: "",
+    result: ""
+  }
+
+  handleChange = e => {
+    this.setState({[e.target.name]:e.target.value})
+  };
+
+
+  onSubmitForm = e => {
+    e.preventDefault();
+    console.log("here")
+    fetch('/api')
+      .then(res => res.json())
+      .then(data => this.setState({ result: data.data }))
+      .catch(err => console.error())
+  }
   
   render() {
+    const { result, name } = this.state
+    
     return (
       <div>
-        <p>hello</p>
-        <p>world!</p>
+        <form onSubmit={this.onSubmitForm}>
+          <label>
+            Name:
+            <input type="text" name="name" />
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
+        {result && (
+          <p>{result}</p>
+          )}
       </div>
     );
   }
