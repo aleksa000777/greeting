@@ -8,22 +8,55 @@ app.use(express.static("dist"));
 // TODO temp local cache, replace with Redis
 const localCache = new Cache(20);
 
-// temp func replace with server call
 const getTimeZone = hours => {
-  if (hours < 12) return "Good Morning";
-  if (hours < 18) return "Good Afternoon";
-  return "Good Evening";
+  if (hours < 12) return 1;
+  if (hours < 18) return 2;
+  return 3;
 };
+
+// TODO temp api call
+const apiCall = name =>
+  new Promise((resolve, reject) => {
+    // temp to test
+    const date = new Date();
+    const hours = date.getHours();
+    const timeZone = getTimeZone(hours);
+    let greeting = "";
+
+    switch (timeZone) {
+      case 1:
+        greeting = "Good Morning";
+        break;
+      case 2:
+        greeting = "Good Afternoon";
+        break;
+      default:
+        greeting = "Good Evening";
+    }
+
+    resolve(`${greeting} ${name}`);
+    console.log(reject);
+    // fetch(`${URL}?name=${name}`)
+    //   .then(response => response.json())
+    //   .then(resolve)
+    //   .catch(reject);
+  });
 
 app.get("/api", (req, res) => {
   const date = new Date();
   const hours = date.getHours();
   const timeZone = getTimeZone(hours);
   const user = localCache.get(req.query.name);
-  if (user !== timeZone) {
-    localCache.put(req.query.name, timeZone);
+  if (!user || (user && user.zone !== timeZone)) {
+    apiCall(req.query.name)
+      .then(response => {
+        localCache.put(req.query.name, { zone: timeZone, data: response });
+        res.send({ data: `${response}` });
+      })
+      .catch(console.error);
+  } else {
+    res.send({ data: user.data });
   }
-  res.send({ data: `${timeZone} ${req.query.name}!` });
 });
 
 app.listen(8080, () => console.log("Listening on port 8080!"));
