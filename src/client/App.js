@@ -31,9 +31,12 @@ class App extends Component {
             <input
               type="text"
               name="name"
+              maxLength="30"
+              pattern="[A-Za-z\s]+"
               id="name"
               value={name}
               onChange={this.handleChange}
+              required
             />
           </label>
           <input type="submit" value="Submit" />
