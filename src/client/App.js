@@ -13,7 +13,8 @@ class App extends Component {
 
   onSubmitForm = e => {
     e.preventDefault();
-    fetch("/api")
+    const { name } = this.state;
+    fetch(`/api?name=${name}`)
       .then(res => res.json())
       .then(data => this.setState({ result: data.data }))
       .catch(err => console.error(err));
