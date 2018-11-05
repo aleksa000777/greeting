@@ -46,12 +46,13 @@ app.get("/api", (req, res) => {
   const date = new Date();
   const hours = date.getHours();
   const timeZone = getTimeZone(hours);
-  const user = localCache.get(req.query.name);
+  const { name } = req.query;
+  const user = localCache.get(name);
   if (!user || (user && user.zone !== timeZone)) {
-    apiCall(req.query.name)
+    apiCall(name)
       .then(response => {
-        localCache.put(req.query.name, { zone: timeZone, data: response });
-        res.send({ data: `${response}` });
+        localCache.put(name, { zone: timeZone, data: response });
+        res.send({ data: response });
       })
       .catch(console.error);
   } else {
@@ -60,3 +61,9 @@ app.get("/api", (req, res) => {
 });
 
 app.listen(8080, () => console.log("Listening on port 8080!"));
+
+module.exports = {
+  app,
+  apiCall,
+  getTimeZone
+};
